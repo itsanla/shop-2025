@@ -1,51 +1,29 @@
-import morgan from 'morgan';
 import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
 
-import BaseRouter from '@src/routes';
-
-import Paths from '@src/common/constants/Paths';
-import EnvVars from '@src/common/constants/EnvVars';
-import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
-import { RouteError } from '@src/common/utils/route-errors';
-import { NodeEnvs } from '@src/common/constants';
-
-
-/******************************************************************************
-                                Setup
-******************************************************************************/
+import BaseRouter from './routes';
+import Paths from './common/constants/Paths';
+import EnvVars from './common/constants/EnvVars';
+import HttpStatusCodes from './common/constants/HttpStatusCodes';
+import { RouteError } from './common/utils/route-errors';
+import { NodeEnvs } from './common/constants';
 
 const app = express();
 
-
-// **** Middleware **** //
-
-// Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-// Show routes called in console during development
-if (EnvVars.NodeEnv === NodeEnvs.DEV) {
-  app.use(morgan('dev'));
-}
-
-// Security
 if (EnvVars.NodeEnv === NodeEnvs.PRODUCTION) {
-  // eslint-disable-next-line n/no-process-env
-  if (!process.env.DISABLE_HELMET) {
-    app.use(helmet());
-  }
+  app.use(helmet());
 }
 
-// Add APIs, must be after middleware
 app.use(Paths._, BaseRouter);
 
-// Add error handler
 app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
-  if (EnvVars.NodeEnv !== NodeEnvs.TEST.valueOf()) {
+  if (EnvVars.NodeEnv !== NodeEnvs.TEST) {
     console.error(err);
   }
-  let status: HttpStatusCodes = HttpStatusCodes.BAD_REQUEST;
+  let status: HttpStatusCodes = 400;
   if (err instanceof RouteError) {
     status = err.status;
     res.status(status).json({ error: err.message });

@@ -24,7 +24,6 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname, // Agar path tsconfig akurat
         warnOnUnsupportedTypeScriptVersion: false,
       },
     },

@@ -1,4 +1,4 @@
-import { ValidationError } from '@src/common/utils/route-errors';
+import { ValidationError } from '../../common/utils/route-errors';
 
 type Schema = Record<string, (val: unknown) => unknown>;
 

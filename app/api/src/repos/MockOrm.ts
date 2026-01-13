@@ -1,63 +1,22 @@
-import jsonfile from 'jsonfile';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { IUser } from '../models/User';
+import EnvVars from '../common/constants/EnvVars';
+import { NodeEnvs } from '../common/constants';
 
-import EnvVars from '@src/common/constants/EnvVars';
-import { NodeEnvs } from '@src/common/constants';
-import { IUser } from '@src/models/User';
-
-
-/******************************************************************************
-                                Constants
-******************************************************************************/
-
-const DB_FILE_NAME = (
-  EnvVars.NodeEnv === NodeEnvs.TEST 
-    ? 'database.test.json' 
-    : 'database.json'
-);
-
-
-/******************************************************************************
-                                Types
-******************************************************************************/
+const DB_FILE = EnvVars.NodeEnv === NodeEnvs.TEST ? 'database.test.json' : 'database.json';
 
 interface IDatabase {
   users: IUser[];
 }
 
-
-/******************************************************************************
-                                Functions
-******************************************************************************/
-
-/**
- * Fetch the json from the file.
- */
-function openDb(): Promise<IDatabase> {
-  return jsonfile.readFile(__dirname + '/' + DB_FILE_NAME) as 
-    Promise<IDatabase>;
+async function openDb(): Promise<IDatabase> {
+  const data = await fs.readFile(path.join(__dirname, DB_FILE), 'utf-8');
+  return JSON.parse(data);
 }
 
-/**
- * Update the file.
- */
-function saveDb(db: IDatabase): Promise<void> {
-  return jsonfile.writeFile((__dirname + '/' + DB_FILE_NAME), db);
+async function saveDb(db: IDatabase): Promise<void> {
+  await fs.writeFile(path.join(__dirname, DB_FILE), JSON.stringify(db, null, 2));
 }
 
-/**
- * Empty the database
- */
-function cleanDb(): Promise<void> {
-  return jsonfile.writeFile((__dirname + '/' + DB_FILE_NAME), {});
-}
-
-
-/******************************************************************************
-                                Export default
-******************************************************************************/
-
-export default {
-  openDb,
-  saveDb,
-  cleanDb,
-} as const;
+export default { openDb, saveDb };
