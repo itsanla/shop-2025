@@ -1,34 +1,29 @@
-import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
-
-import BaseRouter from './routes';
-import Paths from './common/constants/Paths';
-import EnvVars from './common/constants/EnvVars';
-import HttpStatusCodes from './common/constants/HttpStatusCodes';
-import { RouteError } from './common/utils/route-errors';
-import { NodeEnvs } from './common/constants';
+import cors from 'cors';
+import helmet from 'helmet';
+import { env } from './common/env';
 
 const app = express();
 
+app.use(cors());
+app.use(helmet());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-if (EnvVars.NodeEnv === NodeEnvs.PRODUCTION) {
-  app.use(helmet());
-}
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    message: 'Marketplace API v1',
+    env: env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  });
+});
 
-app.use(Paths._, BaseRouter);
-
-app.use((err: Error, _: Request, res: Response, next: NextFunction) => {
-  if (EnvVars.NodeEnv !== NodeEnvs.TEST) {
-    console.error(err);
-  }
-  let status: HttpStatusCodes = 400;
-  if (err instanceof RouteError) {
-    status = err.status;
-    res.status(status).json({ error: err.message });
-  }
-  return next(err);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    status: 'error',
+    message: err.message || 'Internal Server Error',
+  });
 });
 
 export default app;
