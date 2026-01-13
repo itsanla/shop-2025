@@ -41,7 +41,7 @@ class _GridElectronicState extends State<GridElectronic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Electronic Product",
           style: TextStyle(
             color: Colors.white,
@@ -54,15 +54,15 @@ class _GridElectronicState extends State<GridElectronic> {
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           },
-          icon: Icon(Icons.arrow_back, color: Colors.white, size: 22),
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.shopping_cart, color: Colors.white, size: 22),
+            icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 22),
           ),
         ],
       ),
@@ -70,8 +70,8 @@ class _GridElectronicState extends State<GridElectronic> {
         child: SingleChildScrollView(
           child: GridView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               mainAxisSpacing: 5,
             ),
@@ -96,7 +96,7 @@ class _GridElectronicState extends State<GridElectronic> {
                           children: [
                             Text(
                               item['name'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54,
                                 fontSize: 12,
@@ -116,7 +116,7 @@ class _GridElectronicState extends State<GridElectronic> {
                                         size: 10,
                                         color: Colors.red.shade300,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 5),
                                       Text(
                                         "Rp. ${item["price"]}",
                                         style: TextStyle(
@@ -135,7 +135,7 @@ class _GridElectronicState extends State<GridElectronic> {
                                           size: 12,
                                           color: Colors.green.shade300,
                                         ),
-                                        SizedBox(width: 5),
+                                        const SizedBox(width: 5),
                                         Text(
                                           "Rp. ${item["promo"]}",
                                           style: TextStyle(
@@ -173,7 +173,7 @@ class DetailElectronic extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           item['name'],
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -183,14 +183,14 @@ class DetailElectronic extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => GridElectronic()),
+            MaterialPageRoute(builder: (context) => const GridElectronic()),
           ),
-          icon: Icon(Icons.arrow_back, color: Colors.white, size: 22),
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.shopping_cart, color: Colors.white, size: 22),
+            icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 22),
           ),
         ],
       ),
@@ -198,7 +198,7 @@ class DetailElectronic extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.only(left: 15),
             child: Image.network(
@@ -208,9 +208,9 @@ class DetailElectronic extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 20, 0, 0),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
             child: Text(
               "Product Description",
               style: TextStyle(
@@ -224,7 +224,7 @@ class DetailElectronic extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(25, 5, 0, 5),
             child: Text(
               item['description'],
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.normal,
                 color: Colors.black38,
@@ -245,9 +245,9 @@ class DetailElectronic extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  spacing: 10,
                   children: [
                     Icon(Icons.favorite, color: Colors.red.shade700),
+                    const SizedBox(width: 10),
                     Text(
                       "Rp. ${item["promo"]}",
                       style: TextStyle(
@@ -261,7 +261,7 @@ class DetailElectronic extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Center(
             child: SizedBox(
               width: 200,
@@ -269,11 +269,11 @@ class DetailElectronic extends StatelessWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(30),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 onPressed: () {},
-                child: Text(
+                child: const Text(
                   'Add To Cart',
                   style: TextStyle(
                     color: Colors.black,
