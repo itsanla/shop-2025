@@ -5,7 +5,10 @@
     "build": "tsc",
     "dev": "nodemon src/index.ts",
     "lint": "eslint .",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -14,6 +17,7 @@
     "@aws-sdk/client-s3": "^3.967.0",
     "@bull-board/api": "^6.16.2",
     "@bull-board/express": "^6.16.2",
+    "@prisma/client": "^7.2.0",
     "bullmq": "^5.66.5",
     "cors": "^2.8.5",
     "dayjs": "^1.11.19",
@@ -38,6 +42,7 @@
     "eslint-plugin-n": "^17.23.1",
     "eslint-plugin-promise": "^7.2.1",
     "nodemon": "^3.1.11",
+    "prisma": "^7.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0"
