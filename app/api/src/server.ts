@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './common/env';
 import { bullBoardRouter } from './config/bull-board';
+import routes from './routes';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
+app.use('/api', routes);
 app.use('/admin/queues', bullBoardRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
