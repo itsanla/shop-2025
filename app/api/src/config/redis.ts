@@ -1,5 +1,5 @@
 import IORedis from 'ioredis';
-import { env } from '../src/common/env';
+import { env } from '../common/env';
 
 export const redisConnection = new IORedis({
   host: env.REDIS_HOST,

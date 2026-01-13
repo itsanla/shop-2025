@@ -6,8 +6,10 @@ dotenv.config({ path: path.join(__dirname, `../config/.env.${NODE_ENV}`) });
 
 import app from './server';
 import { env } from './common/env';
+import './config/queue';
 
 app.listen(env.PORT, () => {
   console.info(`🚀 Server running on port ${env.PORT}`);
   console.info(`   Environment: ${env.NODE_ENV}`);
+  console.info(`📨 Email queue worker started`);
 });

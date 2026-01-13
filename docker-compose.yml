@@ -4,12 +4,12 @@ services:
   # --- 1. Database Service ---
   postgres:
     image: postgres:17-bookworm
-    container_name: marketplace_db
+    container_name: db_ecommerce
     restart: always
     environment:
       POSTGRES_USER: itsanla
       POSTGRES_PASSWORD: "070078"
-      POSTGRES_DB: marketplace_db
+      POSTGRES_DB: db_ecommerce
     ports:
       - "5432:5432"
     volumes:
@@ -20,7 +20,7 @@ services:
   # --- 2. Queue Service (Redis) ---
   redis:
     image: redis:8-bookworm
-    container_name: marketplace_redis
+    container_name: redis_ecommerce
     restart: always
     # PENTING UNTUK QUEUE:
     # --appendonly yes: Wajib aktif agar jika container restart, antrian pesan (BullMQ) tidak hilang.

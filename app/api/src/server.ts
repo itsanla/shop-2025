@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './common/env';
+import emailRouter from './routes/email';
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.get('/', (req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use('/api/email', emailRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
