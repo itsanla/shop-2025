@@ -1,0 +1,72 @@
+plugins {
+    id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+// --- BAGIAN BARU: Script untuk membaca .env ---
+def envProperties = new Properties()
+// Mencari file .env di root project flutter (naik 2 level dari android/app)
+def envFile = rootProject.file("../.env")
+if (envFile.exists()) {
+    envFile.withReader('UTF-8') { reader ->
+        envProperties.load(reader)
+    }
+} else {
+    println("Warning: .env file not found at " + envFile.path)
+}
+// ---------------------------------------------
+
+android {
+    namespace = "com.example.mobile"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    defaultConfig {
+        applicationId = "com.example.mobile"
+        
+        // PENTING: Firebase UI Auth butuh minimal SDK 23
+        // Jangan pakai flutter.minSdkVersion karena biasanya nilainya 19 (terlalu rendah)
+        minSdkVersion = flutter.minSdkVersion 
+        
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+
+        // --- INJECTION: Masukkan nilai .env ke resource Android ---
+        
+        // 1. Facebook App ID
+        resValue "string", "facebook_app_id", envProperties['FACEBOOK_APP_ID'] ?: ""
+
+        // 2. Facebook Client Token
+        resValue "string", "facebook_client_token", envProperties['FACEBOOK_CLIENT_TOKEN'] ?: ""
+
+        // 3. Protocol Scheme (Gabungan "fb" + App ID)
+        // Ini otomatis menggabungkan string "fb" dengan ID dari env
+        resValue "string", "fb_login_protocol_scheme", "fb" + (envProperties['FACEBOOK_APP_ID'] ?: "")
+        
+        // ---------------------------------------------------------
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
