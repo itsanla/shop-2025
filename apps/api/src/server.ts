@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { env } from './common/env';
 import { bullBoardRouter } from './config/bull-board';
 import routes from './routes';
+import authRoutes from './auth';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api', routes);
+app.use('/api/auth', authRoutes);
 app.use('/admin/queues', bullBoardRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

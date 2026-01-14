@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'gridelectronic.dart';
+import 'product_detail.dart';
+import 'cart_page.dart';
+import 'cart_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,356 +17,217 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController searchProduct = TextEditingController();
-  PageController bannerController =PageController();
-  List<dynamic> listProduct = [];
-  Timer? bannerTamer;
+  List<dynamic> products = [];
+  PageController bannerController = PageController();
+  int bannerIndex = 0;
 
-  int indexBanner = 0;
   @override
   void initState() {
     super.initState();
-    getProductItem();
-    bannerOnBoarding();
+    _fetchProducts();
+    _startBannerTimer();
   }
 
-  @override
-  void dispose() {
-    bannerTamer?.cancel();
-    bannerController.dispose();
-    searchProduct.dispose();
-    super.dispose();
-  }
-
-  void bannerOnBoarding() {
-    bannerTamer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (indexBanner < 2) {
-        indexBanner++;
-      } else {
-        indexBanner = 0;
-      }
-      bannerController.animateToPage(
-        indexBanner,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  Future<void> getProductItem() async {
-    String baseUrl = dotenv.env['BASE_URL']!;
-    String urlProductItem = "$baseUrl/servershop_anla/allproductitem.php";
-    try{
-      var response = await http.get(Uri.parse(urlProductItem));
-      setState((){
-        listProduct = json.decode(response.body);
-      });
-    } catch(exc){
-      if (kDebugMode){
-        print(exc);
-      }
+  Future<void> _fetchProducts() async {
+    try {
+      final response = await http.get(Uri.parse('${dotenv.env['BASE_URL']}/products'));
+      setState(() => products = json.decode(response.body));
+    } catch (e) {
+      if (kDebugMode) print(e);
     }
+  }
+
+  void _startBannerTimer() {
+    Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (bannerIndex < 2) bannerIndex++; else bannerIndex = 0;
+      bannerController.animateToPage(bannerIndex, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> bannerImage = [
-      'lib/images/banner.png',
-      'lib/images/banner2.png',
-      'lib/images/banner3.png',
-    ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Anla Online Shop",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
+        title: const Text('Anla Online Shop', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.green,
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-            size: 22,
-          ),
-        ),
+        leading: IconButton(icon: const Icon(Icons.menu, color: Colors.white), onPressed: () {}),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.shopping_cart,
-              color: Colors.white,
-              size: 22,
-            ),
+            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage())),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.camera_alt_rounded,
-              color: Colors.white,
-              size: 22,
-            ),
-          ),
+          IconButton(icon: const Icon(Icons.camera_alt, color: Colors.white), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: <Widget> [
-            TextField(
-              controller: searchProduct,
-              decoration: const InputDecoration(
-                hintText: 'Search Product',
-                hintStyle: TextStyle(color: Colors.black),
-                suffixIcon: Icon(
-                  Icons.filter_list, 
-                  size: 17, 
-                  color: Colors.black,
-                  ),
-                prefixIcon: Icon(Icons.search),
-                filled: true,
-                fillColor: Color.fromARGB(255, 224, 239, 225),
-              ),
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 5,),
-            SizedBox(height: 150,
-            child: PageView.builder(
-              controller: bannerController,
-              itemCount: bannerImage.length,
-              itemBuilder: (context, index){
-                return Image.asset(bannerImage[index], fit: BoxFit.cover);
-              }),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: SizedBox(
-                height: 90,
-                width: double.infinity,
-                child: Row(
-                  mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-                  children: <Widget> [
-                    Card(
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                            builder: (context) => const GridElectronic(),
-                            ),
-                          );
-                        },
-                        child: SizedBox(
-                          height: 80, 
-                          width: 60,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget> [
-                              Image.asset('lib/images/electronics.png', width: 45, height: 45),
-                              const Text(
-                                "Electronik",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ),
-                    Card(
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {},
-                        child: SizedBox(
-                          height: 80, 
-                          width: 60,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget> [
-                              Image.asset('lib/images/man-shirt.png', width: 45, height: 45),
-                              const Text(
-                                "baju pria",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ),
-                    Card(
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {},
-                        child: SizedBox(
-                          height: 80, 
-                          width: 60,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget> [
-                              Image.asset('lib/images/man-shoes.png', width: 45, height: 45),
-                              const Text(
-                                "sepatu pria",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ),
-                    Card(
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {},
-                        child: SizedBox(
-                          height: 80, 
-                          width: 60,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget> [
-                              Image.asset('lib/images/woman-shirt.png', width: 45, height: 45),
-                              const Text(
-                                "dress",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ),
-                    Card(
-                      elevation: 5,
-                      child: InkWell(
-                        onTap: () {},
-                        child: SizedBox(
-                          height: 80, 
-                          width: 60,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget> [
-                              Image.asset('lib/images/woman-shoes.png', width: 45, height: 45),
-                              const Text(
-                                "hills",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      ),
+          children: [
+            _buildSearchBar(),
+            _buildBanner(),
+            _buildCategories(),
+            _buildProductGrid(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Search Product',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: const Icon(Icons.filter_list, size: 20),
+          filled: true,
+          fillColor: Colors.green[50],
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return SizedBox(
+      height: 150,
+      child: PageView(
+        controller: bannerController,
+        children: ['banner.png', 'banner2.png', 'banner3.png']
+            .map((img) => Image.asset('lib/images/$img', fit: BoxFit.cover))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildCategories() {
+    final categories = [
+      {'icon': 'electronics.png', 'name': 'Elektronik'},
+      {'icon': 'man-shirt.png', 'name': 'Baju Pria'},
+      {'icon': 'man-shoes.png', 'name': 'Sepatu Pria'},
+      {'icon': 'woman-shirt.png', 'name': 'Dress'},
+      {'icon': 'woman-shoes.png', 'name': 'Heels'},
+    ];
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.all(8),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+          return Card(
+            child: InkWell(
+              onTap: () {
+                if (cat['name'] == 'Elektronik') {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const GridElectronic()));
+                }
+              },
+              child: Container(
+                width: 70,
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('lib/images/${cat['icon']}', width: 40, height: 40),
+                    const SizedBox(height: 4),
+                    Text(cat['name']!, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
                   ],
                 ),
-                ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget> [
-                    const Text(
-                      "Popular Product",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    if(listProduct.isEmpty)...[
-                      const Center(
-                        child: Text(
-                          "No products available",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProductGrid() {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          const Text('Popular Product', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          products.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProductDetail(product: product)),
                         ),
-                      ),
-                    ]
-                    else ... [
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: 
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemCount: listProduct.length,
-                        itemBuilder: (context,index){
-                          final productTotal = listProduct[index];
-                          return GestureDetector(
-                            onTap: () {},
-                            child: Card(
-                              elevation: 5,
-                              child: Column(children: [
-                                Image.network(
-                                  productTotal['images'],
-                                  height: 150,
-                                  width: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Text(productTotal['name']),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.network(
+                              product['images'][0],
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 140,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.image, size: 50),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product['name'],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Icon(Icons.favorite, color: Colors.red, size: 16),
-                                      const SizedBox(width: 5),
                                       Text(
-                                        '\Rp.${productTotal['price']}',
-                                        style: const TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 11,
-                                        ),
+                                        'Rp ${(product['price'] / 1000).toStringAsFixed(0)}k',
+                                        style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12),
+                                      ),
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        icon: const Icon(Icons.add_shopping_cart, size: 18, color: Colors.green),
+                                        onPressed: () {
+                                          CartService().addItem(product);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('${product['name']} added to cart'), duration: const Duration(seconds: 1)),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
-                                ),
-                              ]),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      )
-                    ]
-                  ],
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-          ],
-        )
+        ],
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_facebook/firebase_ui_oauth_facebook.dart';
 import 'firebase_options.dart';
 import 'splashscreen.dart';
+import 'auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -99,64 +100,7 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return SignInScreen(
-            // Kustomisasi Header agar lebih visual
-            headerBuilder: (context, constraints, shrinkOffset) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Ganti Icon ini dengan Image.asset('assets/logo.png') kamu nanti
-                    Icon(
-                      Icons.shopping_bag_outlined, 
-                      size: 80, 
-                      color: Theme.of(context).colorScheme.primary
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "Anla Online Shop",
-                      style: TextStyle(
-                        fontSize: 26, 
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      "Belanja hemat, barang berkualitas",
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              );
-            },
-            
-            // Mengubah teks subtitle default
-            subtitleBuilder: (context, action) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: action == AuthAction.signIn
-                    ? const Text('Silakan masuk untuk melanjutkan.')
-                    : const Text('Silakan buat akun baru.'),
-              );
-            },
-
-            // Footer (Opsional: Copyright / Terms)
-            footerBuilder: (context, action) {
-              return const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Center(
-                  child: Text(
-                    "By signing in, you agree to our Terms & Privacy",
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ),
-              );
-            },
-          );
-        }
+        // Selalu tampilkan SplashScreen dulu, tidak peduli login atau tidak
         return const SplashScreen();
       },
     );

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'gridelectronic.dart';
+import 'onboarding.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,10 +13,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 1), () =>
+    Timer(const Duration(seconds: 2), () =>
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const GridElectronic(),
+          builder: (context) => const OnBoardingPage(),
         ),
       )
     );
@@ -25,8 +25,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       body: Center(
-        child: Image.asset('https://i.pinimg.com/736x/7a/f9/f8/7af9f8b2e5bd6efd5fda10ef99ebb127.jpg', scale: 1.2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.shopping_bag, size: 100, color: Colors.white),
+            const SizedBox(height: 20),
+            const Text(
+              'Anla Online Shop',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }

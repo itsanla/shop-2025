@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
 const NODE_ENV = process.env.NODE_ENV ?? 'development';

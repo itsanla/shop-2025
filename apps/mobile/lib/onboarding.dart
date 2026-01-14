@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart';
+import 'main_layout.dart';
 
 class OnBoardingPage extends StatefulWidget {
   const OnBoardingPage({super.key});
@@ -113,7 +113,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                       if(indexPage == dataAan.length - 1){
                         Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                builder: (context) => const HomePage(),
+                                builder: (context) => const MainLayout(),
                                 ),
                         );
                       }
