@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'cart_service.dart';
+import 'payment_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final cart = CartService();
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.green,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: ListenableBuilder(
-        listenable: cart,
-        builder: (context, _) {
-          if (cart.items.isEmpty) {
-            return const Center(child: Text('Cart is empty', style: TextStyle(fontSize: 16, color: Colors.grey)));
-          }
+      body: Consumer<CartService>(
+        builder: (context, cart, child) {
+          if (cart.items.isEmpty) return const Center(child: Text('Cart is empty'));
           
           return ListView.builder(
             itemCount: cart.items.length,
@@ -28,20 +26,30 @@ class CartPage extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.all(8),
                 child: ListTile(
-                  leading: SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: Image.network(
-                      item['images'][0],
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(color: Colors.grey[300], child: const Icon(Icons.image)),
-                    ),
+                  leading: Image.network(item.image, width: 60, height: 60, fit: BoxFit.cover),
+                  title: Text(item.name),
+                  subtitle: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle, color: Colors.red, size: 18),
+                        onPressed: () => item.quantity > 1 ? cart.updateQuantity(item.id, item.quantity - 1) : null,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                      Text('${item.quantity}'),
+                      IconButton(
+                        icon: const Icon(Icons.add_circle, color: Colors.green, size: 18),
+                        onPressed: () => cart.updateQuantity(item.id, item.quantity + 1),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                      Flexible(child: Text('Rp ${(item.price / 1000).toStringAsFixed(0)}k')),
+                    ],
                   ),
-                  title: Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('Rp ${(item['price'] / 1000).toStringAsFixed(0)}k x ${item['quantity']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => cart.removeItem(item['id']),
+                    onPressed: () => cart.removeItem(item.id),
                   ),
                 ),
               );
@@ -49,14 +57,13 @@ class CartPage extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: ListenableBuilder(
-        listenable: cart,
-        builder: (context, _) {
+      bottomNavigationBar: Consumer<CartService>(
+        builder: (context, cart, child) {
           if (cart.items.isEmpty) return const SizedBox.shrink();
           
           return Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)]),
+            color: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -64,13 +71,35 @@ class CartPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${cart.totalItems} items', style: const TextStyle(fontSize: 12)),
-                    Text('Rp ${(cart.totalPrice / 1000).toStringAsFixed(0)}k', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('${cart.totalItems} items'),
+                    Text('Rp ${(cart.totalPrice / 1000).toStringAsFixed(0)}k', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (FirebaseAuth.instance.currentUser == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please login to continue'), backgroundColor: Colors.red),
+                      );
+                      return;
+                    }
+                    final items = cart.items.map((item) => {
+                      'id': item.id,
+                      'name': item.name,
+                      'price': item.price,
+                      'quantity': item.quantity,
+                    }).toList();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentPage(
+                          totalPrice: cart.totalPrice,
+                          items: items,
+                        ),
+                      ),
+                    );
+                  },
                   child: const Text('Checkout'),
                 ),
               ],

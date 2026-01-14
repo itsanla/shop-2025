@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'onboarding.dart';
+import 'asset_config.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,7 +31,13 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.shopping_bag, size: 100, color: Colors.white),
+            CircleAvatar(
+              radius: 80,
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: Image.asset('assets/logo.png', height: 140, width: 140, fit: BoxFit.cover),
+              ),
+            ),
             const SizedBox(height: 20),
             const Text(
               'Anla Online Shop',

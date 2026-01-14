@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'gridelectronic.dart';
+import 'asset_config.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -68,9 +69,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     List<String> bannerImage = [
-      'lib/images/banner.png',
-      'lib/images/banner2.png',
-      'lib/images/banner3.png',
+      'banner.png',
+      'banner2.png',
+      'banner3.png',
     ];
     return Scaffold(
       appBar: AppBar(
@@ -140,7 +141,7 @@ class _HomePageState extends State<HomePage> {
               controller: bannerController,
               itemCount: bannerImage.length,
               itemBuilder: (context, index){
-                return Image.asset(bannerImage[index], fit: BoxFit.cover);
+                return Image.network(AssetConfig.getImageUrl(bannerImage[index]), fit: BoxFit.cover);
               }),
             ),
             Padding(
@@ -167,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                              Image.asset('lib/images/electronics.png', width: 45, height: 45),
+                              Image.network(AssetConfig.getImageUrl('electronics.png'), width: 45, height: 45),
                               const Text(
                                 "Electronik",
                                 style: TextStyle(
@@ -191,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                              Image.asset('lib/images/man-shirt.png', width: 45, height: 45),
+                              Image.network(AssetConfig.getImageUrl('man-shirt.png'), width: 45, height: 45),
                               const Text(
                                 "baju pria",
                                 style: TextStyle(
@@ -215,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                              Image.asset('lib/images/man-shoes.png', width: 45, height: 45),
+                              Image.network(AssetConfig.getImageUrl('man-shoes.png'), width: 45, height: 45),
                               const Text(
                                 "sepatu pria",
                                 style: TextStyle(
@@ -239,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                              Image.asset('lib/images/woman-shirt.png', width: 45, height: 45),
+                              Image.network(AssetConfig.getImageUrl('woman-shirt.png'), width: 45, height: 45),
                               const Text(
                                 "dress",
                                 style: TextStyle(
@@ -263,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                              Image.asset('lib/images/woman-shoes.png', width: 45, height: 45),
+                              Image.network(AssetConfig.getImageUrl('woman-shoes.png'), width: 45, height: 45),
                               const Text(
                                 "hills",
                                 style: TextStyle(

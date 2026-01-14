@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'cart_service.dart';
+import 'payment_page.dart';
 
 class ProductDetail extends StatelessWidget {
   final Map<String, dynamic> product;
@@ -102,7 +105,7 @@ class ProductDetail extends StatelessWidget {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () {
-                              CartService().addItem(product);
+                              context.read<CartService>().addItem(product);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('${product['name']} added to cart'), duration: const Duration(seconds: 1)),
                               );
@@ -122,7 +125,29 @@ class ProductDetail extends StatelessWidget {
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              if (FirebaseAuth.instance.currentUser == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Please login to continue'), backgroundColor: Colors.red),
+                                );
+                                return;
+                              }
+                              final price = (product['promo'] != null && product['promo'] > 0) ? product['promo'].toDouble() : product['price'].toDouble();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentPage(
+                                    totalPrice: price,
+                                    items: [{
+                                      'id': product['id'],
+                                      'name': product['name'],
+                                      'price': price,
+                                      'quantity': 1,
+                                    }],
+                                  ),
+                                ),
+                              );
+                            },
                             child: const Text('Buy Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
                         ),

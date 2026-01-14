@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'product_detail.dart';
 import 'cart_page.dart';
 import 'cart_service.dart';
@@ -24,12 +24,8 @@ class _GridElectronicState extends State<GridElectronic> {
   }
 
   Future<void> _fetchProducts() async {
-    try {
-      final response = await http.get(Uri.parse('${dotenv.env['BASE_URL']}/products?category=electronic'));
-      setState(() => products = json.decode(response.body));
-    } catch (e) {
-      if (kDebugMode) print(e);
-    }
+    final response = await http.get(Uri.parse('${dotenv.env['BASE_URL']}/products?category=electronic'));
+    setState(() => products = json.decode(response.body));
   }
 
   @override
@@ -61,69 +57,42 @@ class _GridElectronicState extends State<GridElectronic> {
               itemBuilder: (context, index) {
                 final product = products[index];
                 return Card(
-                  clipBehavior: Clip.antiAlias,
                   child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProductDetail(product: product)),
-                    ),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetail(product: product))),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.network(
-                          product['images'][0],
-                          height: 140,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            height: 140,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.image, size: 50),
-                          ),
-                        ),
+                        Image.network(product['images'][0], height: 140, width: double.infinity, fit: BoxFit.cover),
                         Padding(
                           padding: const EdgeInsets.all(8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                product['name'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
+                              Text(product['name'], maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 4),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      'Rp ${(product['price'] / 1000).toStringAsFixed(0)}k',
-                                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12),
+                                      product['promo'] != null && product['promo'] > 0
+                                          ? 'Rp ${(product['promo'] / 1000).toStringAsFixed(0)}k'
+                                          : 'Rp ${(product['price'] / 1000).toStringAsFixed(0)}k',
+                                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  if (product['promo'] > 0)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Text('PROMO', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-                                    ),
-                                  IconButton(
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    icon: const Icon(Icons.add_shopping_cart, size: 16, color: Colors.green),
-                                    onPressed: () {
-                                      CartService().addItem(product);
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('${product['name']} added to cart'), duration: const Duration(seconds: 1)),
-                                      );
+                                  const Icon(Icons.favorite, color: Colors.red, size: 16),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.read<CartService>().addItem(product);
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${product['name']} added'), duration: const Duration(seconds: 1)));
                                     },
+                                    child: const Icon(Icons.shopping_cart, color: Colors.green, size: 16),
                                   ),
                                 ],
                               ),
+                              if (product['promo'] != null && product['promo'] > 0)
+                                Text('Rp ${(product['price'] / 1000).toStringAsFixed(0)}k', style: const TextStyle(color: Colors.grey, fontSize: 10, decoration: TextDecoration.lineThrough)),
                             ],
                           ),
                         ),

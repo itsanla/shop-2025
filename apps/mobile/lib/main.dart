@@ -5,9 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider, PhoneA
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_facebook/firebase_ui_oauth_facebook.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'splashscreen.dart';
 import 'auth_service.dart';
+import 'cart_service.dart';
+import 'transaction_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,62 +35,68 @@ class MyApp extends StatelessWidget {
     // KITA DEFINISIKAN WARNA UTAMA DISINI
     const primaryColor = Colors.deepPurple;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Anla Online Shop',
-      
-      // --- BAGIAN INI YANG MENGUBAH UI BAWAAN JADI MODERN ---
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: primaryColor,
-          brightness: Brightness.light,
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartService()),
+        ChangeNotifierProvider(create: (_) => TransactionService()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Anla Online Shop',
         
-        // 1. INPUT TEXT MODERN (Bulat & Filled)
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey.shade100,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16), // Sudut membulat
-            borderSide: BorderSide.none, // Hilangkan garis border kasar
+        // --- BAGIAN INI YANG MENGUBAH UI BAWAAN JADI MODERN ---
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: primaryColor,
+            brightness: Brightness.light,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: primaryColor, width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        ),
-
-        // 2. TOMBOL UTAMA (Sign In) JADI PILL SHAPE
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 50), // Tombol tinggi
-            shape: const StadiumBorder(), // Bentuk Pil
-            elevation: 2,
-          ),
-        ),
-
-        // 3. TOMBOL SOSMED (Google/FB) JADI BERSIH
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          
+          // 1. INPUT TEXT MODERN (Bulat & Filled)
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.grey.shade100,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16), // Sudut membulat
+              borderSide: BorderSide.none, // Hilangkan garis border kasar
             ),
-            side: BorderSide(color: Colors.grey.shade300),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: primaryColor, width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          ),
+
+          // 2. TOMBOL UTAMA (Sign In) JADI PILL SHAPE
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              elevation: 2,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            ),
+          ),
+
+          // 3. TOMBOL SOSMED (Google/FB) JADI BERSIH
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              side: BorderSide(color: Colors.grey.shade300),
+            ),
           ),
         ),
-      ),
-      // -------------------------------------------------------
+        // -------------------------------------------------------
 
-      home: const AuthGate(),
+        home: const AuthGate(),
+      ),
     );
   }
 }

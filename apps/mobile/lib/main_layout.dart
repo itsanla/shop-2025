@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'homepage.dart';
+import 'transaction_page.dart';
 import 'profile.dart';
 
 class MainLayout extends StatefulWidget {
@@ -14,6 +15,7 @@ class _MainLayoutState extends State<MainLayout> {
   
   final List<Widget> _pages = [
     const HomePage(),
+    const TransactionPage(),
     const ProfilePage(),
   ];
 
@@ -27,6 +29,7 @@ class _MainLayoutState extends State<MainLayout> {
         selectedItemColor: Colors.green,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: 'Transactions'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
