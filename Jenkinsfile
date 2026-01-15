@@ -61,17 +61,6 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            steps {
-                dir('apps/api') {
-                    sh 'npm install -g pnpm'
-                    sh 'pnpm install --frozen-lockfile'
-                    sh 'pnpm prisma generate'
-                    sh 'pnpm build'
-                }
-            }
-        }
-        
         stage('Docker Build') {
             steps {
                 dir('apps/api') {

@@ -15,3 +15,7 @@
 
 # ini untuk WebView buk
 -keep class android.webkit.** { *; }
+
+# ini untuk ignore Google Play Core yang tidak dipakai buk
+-dontwarn com.google.android.play.core.**
+-ignorewarnings
