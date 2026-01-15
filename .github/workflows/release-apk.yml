@@ -1,0 +1,65 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+    
+    - name: Install dependencies
+      run: |
+        cd apps/mobile
+        flutter pub get
+    
+    - name: Build APK
+      run: |
+        cd apps/mobile
+        flutter build apk --release --split-per-abi
+    
+    - name: Rename APK
+      run: |
+        cd apps/mobile/build/app/outputs/flutter-apk
+        mv app-arm64-v8a-release.apk anla-shop-${{ github.ref_name }}-arm64.apk
+        mv app-armeabi-v7a-release.apk anla-shop-${{ github.ref_name }}-arm32.apk
+        mv app-x86_64-release.apk anla-shop-${{ github.ref_name }}-x86_64.apk
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          apps/mobile/build/app/outputs/flutter-apk/anla-shop-${{ github.ref_name }}-arm64.apk
+          apps/mobile/build/app/outputs/flutter-apk/anla-shop-${{ github.ref_name }}-arm32.apk
+          apps/mobile/build/app/outputs/flutter-apk/anla-shop-${{ github.ref_name }}-x86_64.apk
+        body: |
+          ## Anla Shop Mobile App ${{ github.ref_name }}
+          
+          Download APK sesuai device:
+          - **arm64** - Untuk HP modern (64-bit) - PALING UMUM
+          - **arm32** - Untuk HP lama (32-bit)
+          - **x86_64** - Untuk emulator/tablet x86
+          
+          Backend: https://mobile-anla.mooo.com
+          
+          ### Changelog
+          - Build otomatis dengan optimasi ukuran
+          - Split APK per architecture
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

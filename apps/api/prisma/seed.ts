@@ -10,25 +10,23 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 function parseCSV(filePath: string): any[] {
   const content = fs.readFileSync(filePath, 'utf-8');
   const lines = content.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',');
+  
+  const categoryMap: Record<string, string> = {
+    'Smartphones': 'electronic',
+    'Laptops': 'electronic',
+    'Baju Pria - Shirts': 'baju pria',
+    'Sepatu Pria': 'sepatu pria',
+    'Baju Wanita - Dresses': 'baju wanita',
+    'Baju Pria/Wanita - Tops': 'baju wanita',
+    'Sepatu Wanita': 'sepatu wanita',
+  };
   
   return lines.slice(1).map(line => {
-    const values: string[] = [];
-    let current = '';
-    let inQuotes = false;
+    const regex = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/;
+    const values = line.split(regex).map(v => v.replace(/^"|"$/g, '').trim());
     
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        values.push(current.trim());
-        current = '';
-      } else {
-        current += char;
-      }
-    }
-    values.push(current.trim());
+    const originalCategory = values[11];
+    const mappedCategory = categoryMap[originalCategory] || 'electronic';
     
     return {
       name: values[13] || values[0],
@@ -38,7 +36,7 @@ function parseCSV(filePath: string): any[] {
       image: values[12],
       stock: parseInt(values[9]) || 0,
       brand: values[10],
-      category: values[11]
+      category: mappedCategory
     };
   });
 }

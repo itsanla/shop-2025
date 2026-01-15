@@ -90,6 +90,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget> [
+                const SizedBox(width: 48),
                 Row(
                   children: List.generate(
                     dataAan.length,
@@ -98,17 +99,22 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: indexPage == index ? Colors.black54 : Colors.blueAccent,
+                        color: indexPage == index ? Colors.green : Colors.grey[300],
                         shape: BoxShape.circle,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
+                  width: 48,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: const CircleBorder(),
+                      padding: EdgeInsets.zero,
+                    ),
                     onPressed: (){
                       if(indexPage == dataAan.length - 1){
                         Navigator.of(context).pushReplacement(
@@ -123,8 +129,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                           curve: Curves.easeIn,
                         );
                       }
-                    }, 
-                    icon: const Icon(Icons.arrow_forward, size: 20),
+                    },
+                    child: const Icon(Icons.arrow_forward, size: 20),
                   ),
                 ),
               ],

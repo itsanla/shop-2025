@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'cart_service.dart';
+import 'cart_page.dart';
 import 'payment_page.dart';
 
 class ProductDetail extends StatelessWidget {
@@ -20,7 +21,7 @@ class ProductDetail extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart),
-            onPressed: () => Navigator.pushNamed(context, '/cart'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage())),
           ),
         ],
       ),
@@ -105,10 +106,16 @@ class ProductDetail extends StatelessWidget {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: () {
-                              context.read<CartService>().addItem(product);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('${product['name']} added to cart'), duration: const Duration(seconds: 1)),
-                              );
+                              try {
+                                context.read<CartService>().addItem(product);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('${product['name']} added to cart'), duration: const Duration(seconds: 1)),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to add to cart'), backgroundColor: Colors.red),
+                                );
+                              }
                             },
                             icon: const Icon(Icons.add_shopping_cart),
                             label: const Text('Add to Cart', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

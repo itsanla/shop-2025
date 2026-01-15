@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // KITA DEFINISIKAN WARNA UTAMA DISINI
+    // ini untuk definisikan warna utama buk
     const primaryColor = Colors.deepPurple;
 
     return MultiProvider(
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Anla Online Shop',
         
-        // --- BAGIAN INI YANG MENGUBAH UI BAWAAN JADI MODERN ---
+        // ini bagian yang mengubah UI bawaan jadi modern buk
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
@@ -52,13 +52,13 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
           ),
           
-          // 1. INPUT TEXT MODERN (Bulat & Filled)
+          // ini untuk input text modern yang bulat dan filled buk
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: Colors.grey.shade100,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16), // Sudut membulat
-              borderSide: BorderSide.none, // Hilangkan garis border kasar
+              borderRadius: BorderRadius.circular(16), // ini buat sudut membulat buk
+              borderSide: BorderSide.none, // ini buat hilangin garis border kasar buk
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
 
-          // 2. TOMBOL UTAMA (Sign In) JADI PILL SHAPE
+          // ini untuk tombol utama sign in jadi pill shape buk
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          // 3. TOMBOL SOSMED (Google/FB) JADI BERSIH
+          // ini untuk tombol sosmed Google dan Facebook jadi bersih buk
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
@@ -93,7 +93,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        // -------------------------------------------------------
 
         home: const AuthGate(),
       ),
@@ -109,7 +108,7 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // Selalu tampilkan SplashScreen dulu, tidak peduli login atau tidak
+        // ini selalu tampilkan SplashScreen dulu buk, ga peduli login atau tidak
         return const SplashScreen();
       },
     );

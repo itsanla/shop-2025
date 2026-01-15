@@ -5,6 +5,10 @@ import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'gridelectronic.dart';
+import 'grid_baju_pria.dart';
+import 'grid_baju_wanita.dart';
+import 'grid_sepatu_pria.dart';
+import 'grid_sepatu_wanita.dart';
 import 'product_detail.dart';
 import 'cart_page.dart';
 import 'cart_service.dart';
@@ -21,6 +25,8 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> products = [];
   PageController bannerController = PageController();
   int bannerIndex = 0;
+  Timer? _bannerTimer;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -29,13 +35,25 @@ class _HomePageState extends State<HomePage> {
     _startBannerTimer();
   }
 
-  Future<void> _fetchProducts() async {
-    final response = await http.get(Uri.parse('${dotenv.env['BASE_URL']}/products'));
+  @override
+  void dispose() {
+    _bannerTimer?.cancel();
+    bannerController.dispose();
+    searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchProducts([String? query]) async {
+    final url = query != null && query.isNotEmpty
+        ? '${dotenv.env['BASE_URL']}/search?q=$query'
+        : '${dotenv.env['BASE_URL']}/products';
+    final response = await http.get(Uri.parse(url));
     setState(() => products = json.decode(response.body));
   }
 
   void _startBannerTimer() {
-    Timer.periodic(const Duration(seconds: 3), (timer) {
+    _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!mounted || !bannerController.hasClients) return;
       if (bannerIndex < 2) bannerIndex++; else bannerIndex = 0;
       bannerController.animateToPage(bannerIndex, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     });
@@ -65,6 +83,21 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                controller: searchController,
+                onChanged: (value) => _fetchProducts(value),
+                decoration: InputDecoration(
+                  hintText: 'Search Product',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: const Icon(Icons.filter_list, size: 17),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 224, 239, 225),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                ),
+              ),
+            ),
             SizedBox(
               height: 150,
               child: PageView(
@@ -78,24 +111,22 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.all(8),
                 children: [
-                  {'icon': 'electronics.png', 'name': 'Elektronik'},
-                  {'icon': 'man-shirt.png', 'name': 'Baju Pria'},
-                  {'icon': 'man-shoes.png', 'name': 'Sepatu Pria'},
-                  {'icon': 'woman-shirt.png', 'name': 'Dress'},
-                  {'icon': 'woman-shoes.png', 'name': 'Heels'},
+                  {'icon': 'electronics.png', 'name': 'Elektronik', 'route': const GridElectronic()},
+                  {'icon': 'man-shirt.png', 'name': 'Baju Pria', 'route': const GridBajuPria()},
+                  {'icon': 'man-shoes.png', 'name': 'Sepatu Pria', 'route': const GridSepatuPria()},
+                  {'icon': 'woman-shirt.png', 'name': 'Dress', 'route': const GridBajuWanita()},
+                  {'icon': 'woman-shoes.png', 'name': 'Heels', 'route': const GridSepatuWanita()},
                 ].map((cat) => Card(
                   child: InkWell(
-                    onTap: () {
-                      if (cat['name'] == 'Elektronik') Navigator.push(context, MaterialPageRoute(builder: (context) => const GridElectronic()));
-                    },
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => cat['route'] as Widget)),
                     child: Container(
                       width: 70,
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.network(AssetConfig.getImageUrl(cat['icon']!), width: 40, height: 40),
-                          Text(cat['name']!, style: const TextStyle(fontSize: 9)),
+                          Image.network(AssetConfig.getImageUrl(cat['icon'] as String), width: 40, height: 40),
+                          Text(cat['name'] as String, style: const TextStyle(fontSize: 9)),
                         ],
                       ),
                     ),
@@ -108,7 +139,22 @@ class _HomePageState extends State<HomePage> {
               child: Text('Popular Product', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             products.isEmpty
-                ? const CircularProgressIndicator()
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.search_off, size: 80, color: Colors.grey),
+                          const SizedBox(height: 16),
+                          Text(
+                            searchController.text.isEmpty ? 'Loading...' : 'Produk tidak ditemukan',
+                            style: const TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 : GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

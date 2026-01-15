@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  api:
+    image: itsanla/mobile-api:latest
+    container_name: mobile-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://itsanla:070078@postgres:5432/db_ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY}
+      - MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY}
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=shop-2025 <${SMTP_USER}>
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - mobile-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mobile-postgres
+    environment:
+      POSTGRES_DB: db_ecommerce
+      POSTGRES_USER: itsanla
+      POSTGRES_PASSWORD: 070078
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U itsanla -d db_ecommerce"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - mobile-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: mobile-redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - mobile-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  mobile-network:
+    driver: bridge

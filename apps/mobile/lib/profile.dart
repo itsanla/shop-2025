@@ -5,11 +5,52 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart' as ui;
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:firebase_ui_oauth_facebook/firebase_ui_oauth_facebook.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:async';
 import 'auth_service.dart';
 import 'asset_config.dart';
+import 'email_verification_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  Timer? _verificationTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (mounted) setState(() {});
+      _startVerificationPolling();
+    });
+  }
+
+  @override
+  void dispose() {
+    _verificationTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startVerificationPolling() {
+    _verificationTimer?.cancel();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null && !user.emailVerified && user.providerData.any((p) => p.providerId == 'password')) {
+      _verificationTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+        await FirebaseAuth.instance.currentUser?.reload();
+        if (FirebaseAuth.instance.currentUser?.emailVerified ?? false) {
+          timer.cancel();
+          if (mounted) {
+            await AuthService.syncUserToBackend(FirebaseAuth.instance.currentUser!);
+            setState(() {});
+          }
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,14 +114,7 @@ class ProfilePage extends StatelessWidget {
                               actions: [
                                 AuthStateChangeAction<SignedIn>((context, state) async {
                                   if (state.user!.providerData.any((p) => p.providerId == 'password') && !state.user!.emailVerified) {
-                                    await state.user!.sendEmailVerification();
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Email verifikasi telah dikirim! Cek inbox Anda.')),
-                                      );
-                                      await FirebaseAuth.instance.signOut();
-                                      Navigator.of(context).pop();
-                                    }
+                                    if (context.mounted) Navigator.of(context).pop();
                                   } else {
                                     try {
                                       await AuthService.syncUserToBackend(state.user!);
@@ -90,6 +124,7 @@ class ProfilePage extends StatelessWidget {
                                 }),
                                 AuthStateChangeAction<UserCreated>((context, state) async {
                                   await state.credential.user?.sendEmailVerification();
+                                  if (context.mounted) Navigator.of(context).pop();
                                 }),
                               ],
                             ),
@@ -108,39 +143,7 @@ class ProfilePage extends StatelessWidget {
               ),
             )
           : user.providerData.any((p) => p.providerId == 'password') && !user.emailVerified
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.email_outlined, size: 100, color: Colors.orange),
-                        const SizedBox(height: 20),
-                        const Text('Email Not Verified', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        Text('Please verify ${user.email}', style: const TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await user.sendEmailVerification();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Verification email sent!')),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                          child: const Text('Resend Verification Email'),
-                        ),
-                        const SizedBox(height: 10),
-                        TextButton(
-                          onPressed: () => FirebaseAuth.instance.signOut(),
-                          child: const Text('Logout'),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
+              ? const EmailVerificationPage()
               : Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -174,7 +177,10 @@ class ProfilePage extends StatelessWidget {
                         ),
                       const SizedBox(height: 40),
                       ElevatedButton.icon(
-                        onPressed: () => FirebaseAuth.instance.signOut(),
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          if (mounted) setState(() {});
+                        },
                         icon: const Icon(Icons.logout),
                         label: const Text('Logout'),
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),

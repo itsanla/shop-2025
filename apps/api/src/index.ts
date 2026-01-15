@@ -9,7 +9,7 @@ import { env } from './common/env';
 import './config/queue';
 
 app.listen(env.PORT, () => {
-  console.info(`🚀 Server running on port ${env.PORT}`);
-  console.info(`   Environment: ${env.NODE_ENV}`);
-  console.info(`📨 Email queue worker started`);
+  console.info(`Server berjalan di port ${env.PORT}`);
+  console.info(`Environment: ${env.NODE_ENV}`);
+  console.info(`Email queue worker dimulai`);
 });
