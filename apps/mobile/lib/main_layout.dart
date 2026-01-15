@@ -1,3 +1,4 @@
+// ini layout utama dengan bottom navigation untuk pindah antar halaman buk
 import 'package:flutter/material.dart';
 import 'homepage.dart';
 import 'transaction_page.dart';
@@ -13,6 +14,7 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
   
+  // ini list halaman yang bisa diakses dari bottom navigation buk
   final List<Widget> _pages = [
     const HomePage(),
     const TransactionPage(),
@@ -22,7 +24,9 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ini untuk tampilkan halaman sesuai index yang dipilih buk
       body: _pages[_currentIndex],
+      // ini bottom navigation bar untuk pindah halaman buk
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

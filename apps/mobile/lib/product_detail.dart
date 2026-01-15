@@ -1,3 +1,4 @@
+// ini halaman detail produk untuk tampilkan info lengkap dan tombol beli buk
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +30,7 @@ class ProductDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ini gambar produk buk
             Image.network(
               product['images'][0],
               height: 350,
@@ -50,6 +52,7 @@ class ProductDetail extends StatelessWidget {
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+                  // ini harga produk dengan promo kalau ada buk
                   Row(
                     children: [
                       Text(
@@ -78,6 +81,7 @@ class ProductDetail extends StatelessWidget {
                     style: const TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 16),
+                  // ini info vendor dan stock buk
                   Row(
                     children: [
                       const Icon(Icons.store, size: 18, color: Colors.grey),
@@ -94,6 +98,7 @@ class ProductDetail extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 30),
+                  // ini tombol add to cart dan buy now buk
                   Row(
                     children: [
                       Expanded(

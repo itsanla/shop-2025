@@ -1,3 +1,4 @@
+// ini halaman profil untuk tampilkan info user dan tombol login atau logout buk
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' hide EmailAuthProvider, PhoneAuthProvider;
@@ -23,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    // ini untuk listen perubahan status login user buk
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (mounted) setState(() {});
       _startVerificationPolling();
@@ -35,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  // ini untuk cek verifikasi email setiap 3 detik buk
   void _startVerificationPolling() {
     _verificationTimer?.cancel();
     final user = FirebaseAuth.instance.currentUser;
@@ -63,6 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
+      // ini untuk tampilkan halaman login kalau belum login buk
       body: user == null
           ? Center(
               child: Padding(
@@ -76,6 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 10),
                     const Text('Silakan masuk untuk melanjutkan', style: TextStyle(color: Colors.grey)),
                     const SizedBox(height: 30),
+                    // ini tombol untuk buka halaman login buk
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
@@ -142,8 +147,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             )
+          // ini untuk tampilkan halaman verifikasi email kalau belum verifikasi buk
           : user.providerData.any((p) => p.providerId == 'password') && !user.emailVerified
               ? const EmailVerificationPage()
+              // ini untuk tampilkan info profil user kalau sudah login buk
               : Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -176,6 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       const SizedBox(height: 40),
+                      // ini tombol logout buk
                       ElevatedButton.icon(
                         onPressed: () async {
                           await FirebaseAuth.instance.signOut();

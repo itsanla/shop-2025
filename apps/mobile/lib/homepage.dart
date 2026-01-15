@@ -1,3 +1,4 @@
+// ini halaman utama aplikasi untuk tampilkan produk dan kategori buk
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -43,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  // ini untuk ambil data produk dari backend buk
   Future<void> _fetchProducts([String? query]) async {
     final url = query != null && query.isNotEmpty
         ? '${dotenv.env['BASE_URL']}/search?q=$query'
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> {
     setState(() => products = json.decode(response.body));
   }
 
+  // ini untuk auto slide banner setiap 3 detik buk
   void _startBannerTimer() {
     _bannerTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (!mounted || !bannerController.hasClients) return;
@@ -83,6 +86,7 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // ini search bar untuk cari produk buk
             Padding(
               padding: const EdgeInsets.all(8),
               child: TextField(
@@ -98,6 +102,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            // ini banner promo yang auto slide buk
             SizedBox(
               height: 150,
               child: PageView(
@@ -105,6 +110,7 @@ class _HomePageState extends State<HomePage> {
                 children: ['banner.png', 'banner2.png', 'banner3.png'].map((img) => Image.network(AssetConfig.getImageUrl(img), fit: BoxFit.cover)).toList(),
               ),
             ),
+            // ini kategori produk horizontal scroll buk
             SizedBox(
               height: 100,
               child: ListView(
@@ -138,6 +144,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(8),
               child: Text('Popular Product', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
+            // ini grid produk populer buk
             products.isEmpty
                 ? Center(
                     child: Padding(
@@ -194,6 +201,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         const Icon(Icons.favorite, color: Colors.red, size: 16),
                                         const SizedBox(width: 8),
+                                        // ini tombol tambah ke keranjang buk
                                         GestureDetector(
                                           onTap: () {
                                             context.read<CartService>().addItem(product);

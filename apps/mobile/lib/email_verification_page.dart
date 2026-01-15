@@ -1,3 +1,4 @@
+// ini halaman untuk verifikasi email setelah daftar pakai email buk
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -16,6 +17,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   @override
   void initState() {
     super.initState();
+    // ini untuk cek verifikasi email setiap 3 detik buk
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
       await FirebaseAuth.instance.currentUser?.reload();
       if (FirebaseAuth.instance.currentUser?.emailVerified ?? false) {
@@ -59,6 +61,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               const SizedBox(height: 15),
               const Text('Menunggu verifikasi...', style: TextStyle(color: Colors.grey, fontSize: 14)),
               const SizedBox(height: 30),
+              // ini tombol untuk kirim ulang email verifikasi buk
               TextButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.currentUser?.sendEmailVerification();
@@ -70,6 +73,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                 },
                 child: const Text('Kirim Ulang Email'),
               ),
+              // ini tombol untuk logout dan daftar dengan cara lain buk
               TextButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();

@@ -1,3 +1,4 @@
+// ini halaman detail pembayaran yang sukses untuk tampilkan order ID dan item yang dibeli buk
 import 'package:flutter/material.dart';
 
 class PaymentDetailPage extends StatelessWidget {
@@ -18,6 +19,7 @@ class PaymentDetailPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // ini card untuk tampilkan status pembayaran sukses buk
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -44,6 +46,7 @@ class PaymentDetailPage extends StatelessWidget {
           const SizedBox(height: 16),
           const Text('Items', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
+          // ini list item yang dibeli buk
           ...items.map((item) => Card(
             child: ListTile(
               title: Text(item['name']),
@@ -52,6 +55,7 @@ class PaymentDetailPage extends StatelessWidget {
             ),
           )),
           const SizedBox(height: 16),
+          // ini tombol kembali ke home buk
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
             onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),

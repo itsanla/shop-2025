@@ -1,3 +1,4 @@
+// ini halaman keranjang belanja untuk tampilkan item dan checkout buk
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,7 @@ class CartPage extends StatelessWidget {
         backgroundColor: Colors.green,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      // ini untuk tampilkan list item di keranjang buk
       body: Consumer<CartService>(
         builder: (context, cart, child) {
           if (cart.items.isEmpty) return const Center(child: Text('Cart is empty'));
@@ -31,6 +33,7 @@ class CartPage extends StatelessWidget {
                   subtitle: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // ini tombol kurangi quantity buk
                       IconButton(
                         icon: const Icon(Icons.remove_circle, color: Colors.red, size: 18),
                         onPressed: () => item.quantity > 1 ? cart.updateQuantity(item.id, item.quantity - 1) : null,
@@ -38,6 +41,7 @@ class CartPage extends StatelessWidget {
                         constraints: const BoxConstraints(),
                       ),
                       Text('${item.quantity}'),
+                      // ini tombol tambah quantity buk
                       IconButton(
                         icon: const Icon(Icons.add_circle, color: Colors.green, size: 18),
                         onPressed: () => cart.updateQuantity(item.id, item.quantity + 1),
@@ -47,6 +51,7 @@ class CartPage extends StatelessWidget {
                       Flexible(child: Text('Rp ${(item.price / 1000).toStringAsFixed(0)}k')),
                     ],
                   ),
+                  // ini tombol hapus item dari keranjang buk
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () => cart.removeItem(item.id),
@@ -57,6 +62,7 @@ class CartPage extends StatelessWidget {
           );
         },
       ),
+      // ini bottom bar untuk tampilkan total dan tombol checkout buk
       bottomNavigationBar: Consumer<CartService>(
         builder: (context, cart, child) {
           if (cart.items.isEmpty) return const SizedBox.shrink();
@@ -75,6 +81,7 @@ class CartPage extends StatelessWidget {
                     Text('Rp ${(cart.totalPrice / 1000).toStringAsFixed(0)}k', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
+                // ini tombol checkout ke halaman payment buk
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                   onPressed: () {

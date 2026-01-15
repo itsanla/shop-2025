@@ -1,3 +1,4 @@
+// ini halaman onboarding untuk perkenalan kategori produk waktu pertama buka app buk
 import 'package:flutter/material.dart';
 import 'main_layout.dart';
 
@@ -12,6 +13,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   PageController boardingController =PageController();
   int indexPage = 0;
 
+  // ini data untuk slide onboarding tiap kategori produk buk
   List<Map<String, String>> dataAan = [
     {
       "title":"Welcome to Anla Shop",
@@ -54,6 +56,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   void initState() {
     super.initState();
     boardingController = PageController();
+    // ini untuk track halaman mana yang sedang ditampilkan buk
     boardingController.addListener(() {
       setState(() {
         indexPage = boardingController.page?.round() ?? 0;
@@ -72,6 +75,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     return Scaffold(
       body: Column(
         children: <Widget> [
+          // ini untuk slide onboarding buk
           Expanded(
             child: PageView.builder(
               controller: boardingController,
@@ -91,6 +95,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget> [
                 const SizedBox(width: 48),
+                // ini indicator dot untuk tahu posisi slide buk
                 Row(
                   children: List.generate(
                     dataAan.length,
@@ -105,6 +110,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                     ),
                   ),
                 ),
+                // ini tombol next atau mulai kalau sudah slide terakhir buk
                 SizedBox(
                   width: 48,
                   height: 48,
@@ -142,6 +148,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   }
 }
 
+// ini widget untuk layout tiap slide onboarding buk
 class OnboardingLayout extends StatelessWidget {
   const OnboardingLayout({
     super.key,

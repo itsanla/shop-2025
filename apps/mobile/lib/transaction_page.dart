@@ -1,3 +1,4 @@
+// ini halaman history transaksi untuk tampilkan semua transaksi yang sudah dibayar buk
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_service.dart';
@@ -14,6 +15,7 @@ class TransactionPage extends StatelessWidget {
         backgroundColor: Colors.green,
         automaticallyImplyLeading: false,
       ),
+      // ini untuk tampilkan list transaksi dari TransactionService buk
       body: Consumer<TransactionService>(
         builder: (context, service, child) {
           if (service.transactions.isEmpty) {
@@ -31,6 +33,7 @@ class TransactionPage extends StatelessWidget {
                   title: Text(tx.orderId),
                   subtitle: Text('${tx.items.length} items • Rp ${(tx.totalPrice / 1000).toStringAsFixed(0)}k'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  // ini untuk buka detail transaksi waktu di tap buk
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
